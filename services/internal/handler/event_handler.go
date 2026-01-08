@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"gokart/internal/model"
 	"gokart/internal/producer"
 	"gokart/internal/storage"
@@ -35,13 +36,15 @@ func (h *EventHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	newEvent := model.Event{
 		ID:        uuid.New().String(),
+		EventId:   uuid.New().String(),
 		Type:      req.Type,
 		Source:    req.Source,
 		Timestamp: time.Now().Unix(),
 		Payload:   req.Payload,
 	}
 
-	if err := h.Producer.Produce(newEvent); err != nil {
+	if err := h.Producer.Produce(r.Context(), newEvent); err != nil {
+		fmt.Println(err)	
 		http.Error(w, "Failed to produce event", http.StatusInternalServerError)
 		return
 	}

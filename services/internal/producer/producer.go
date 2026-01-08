@@ -1,7 +1,10 @@
 package producer
 
-import "gokart/internal/model"
+import (
+	"context"
+	"gokart/internal/model"
+)
 
 type EventProducer interface {
-	Produce(event model.Event) error
+	Produce(ctx context.Context, event model.Event) error
 }

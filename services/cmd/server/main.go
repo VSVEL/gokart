@@ -10,7 +10,10 @@ import (
 )
 
 func main() {
-	prod := &producer.StdoutProducer{}
+	prod := producer.NewKafkaProducer(
+		[]string{"localhost:9092"},
+	)
+
 	evtHandler := &handler.EventHandler{
 		Producer: prod,
 	}
@@ -20,3 +23,4 @@ func main() {
 	fmt.Println("✅ Server running on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", mux))
 }
+
