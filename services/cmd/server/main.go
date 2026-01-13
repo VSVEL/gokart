@@ -13,7 +13,7 @@ import (
 
 func main() {
 	prod := producer.NewKafkaProducer(
-		[]string{"localhost:9092"},
+		[]string{"localhost:9093"},
 	)
 
 	evtHandler := &handler.EventHandler{
@@ -21,20 +21,23 @@ func main() {
 	}
 
 	cons := consumer.NewKafkaConsumer(
-		[]string{"localhost:9092"},
-		"gokart-group",
+		[]string{"localhost:9093"},
 		"OrderCreated",
+		"gokart-group",
 	)
 
-	err := cons.Start(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
-	
+	go func() {
+		log.Println("Kafka consumer started")
+		if err := cons.Start(context.Background()); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	mux := routes.SetupRoutes(evtHandler)
 
 	fmt.Println("✅ Server running on http://localhost:8080")
+
+	log.Println("HTTP server running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", mux))
 }
 
