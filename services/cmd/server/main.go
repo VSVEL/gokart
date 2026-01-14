@@ -24,6 +24,7 @@ func main() {
 		[]string{"localhost:9093"},
 		"OrderCreated",
 		"gokart-group",
+		"consumer-1",	
 	)
 
 	go func() {
@@ -40,4 +41,3 @@ func main() {
 	log.Println("HTTP server running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", mux))
 }
-

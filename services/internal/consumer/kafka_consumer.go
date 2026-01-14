@@ -4,22 +4,25 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"gokart/internal/model"
 	"gokart/internal/handler"
+	"gokart/internal/model"
+
 	"github.com/segmentio/kafka-go"
 )
 
 type KafkaConsumer struct {
-	reader *kafka.Reader
+	reader     *kafka.Reader
+	ConsumerID string
 }
 
-func NewKafkaConsumer(brokers []string, topic, group string) *KafkaConsumer {
+func NewKafkaConsumer(brokers []string, topic, group, consumerID string) *KafkaConsumer {
 	return &KafkaConsumer{
 		reader: kafka.NewReader(kafka.ReaderConfig{
-			Brokers:  brokers,
+			Brokers: brokers,
 			Topic:   topic,
 			GroupID: group,
 		}),
+		ConsumerID: consumerID,
 	}
 }
 
@@ -35,15 +38,17 @@ func (c *KafkaConsumer) Start(ctx context.Context) error {
 		var event model.Event
 		json.Unmarshal(msg.Value, &event)
 
-		fmt.Println("Kafka event received:", orderID, event.Type)
+		fmt.Printf("[%s] Kafka event received: OrderID=%s, EventType=%s\n", c.ConsumerID, orderID, event.Type)
 
 		if handler.AlreadyProcessed(orderID) {
-			fmt.Println("Duplicate order skipped:", orderID)
+			fmt.Printf("[%s] Duplicate order skipped: %s\n", c.ConsumerID, orderID)
 			continue
 		}
 
+		fmt.Printf("[%s] Processing order: %s\n", c.ConsumerID, orderID)
 		handler.ProcessOrder(orderID, event)
 
 		handler.MarkProcessed(orderID, event.Type)
+		fmt.Printf("[%s] Order processed successfully: %s\n", c.ConsumerID, orderID)
 	}
 }
