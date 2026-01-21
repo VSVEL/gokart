@@ -9,22 +9,26 @@ import (
 	"gokart/internal/routes"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 )
 
 func main() {
-	prod := producer.NewKafkaProducer(
-		[]string{"localhost:9093"},
-	)
+	// Parse Kafka brokers from environment variable
+	// Expected format: "localhost:9092" or "broker1:9092,broker2:9092"
+	kafkaBrokers := strings.Split(os.Getenv("KAFKA_BROKERS"), ",")
+
+	prod := producer.NewKafkaProducer(kafkaBrokers)
 
 	evtHandler := &handler.EventHandler{
 		Producer: prod,
 	}
 
 	cons := consumer.NewKafkaConsumer(
-		[]string{"localhost:9093"},
+		kafkaBrokers,
 		"OrderCreated",
 		"gokart-group",
-		"consumer-1",	
+		"consumer-1",
 	)
 
 	go func() {

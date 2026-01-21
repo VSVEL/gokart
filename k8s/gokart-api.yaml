@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gokart-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gokart-api
+  template:
+    metadata:
+      labels:
+        app: gokart-api
+    spec:
+      containers:
+      - name: gokart-api
+        image: gokart-api:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: gokart-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gokart-api
+spec:
+  type: NodePort
+  selector:
+    app: gokart-api
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 30080
