@@ -13,14 +13,21 @@ spec:
         app: gokart-api
     spec:
       containers:
-      - name: gokart-api
-        image: gokart-api:latest
-        imagePullPolicy: Never
-        ports:
-        - containerPort: 8080
-        envFrom:
-        - configMapRef:
-            name: gokart-config
+        - name: gokart-api
+          image: gokart-api:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: gokart-config
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
 ---
 apiVersion: v1
 kind: Service
@@ -31,6 +38,6 @@ spec:
   selector:
     app: gokart-api
   ports:
-  - port: 8080
-    targetPort: 8080
-    nodePort: 30080
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30080

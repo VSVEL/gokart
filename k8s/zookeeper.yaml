@@ -13,13 +13,20 @@ spec:
         app: zookeeper
     spec:
       containers:
-      - name: zookeeper
-        image: confluentinc/cp-zookeeper:7.5.0
-        ports:
-        - containerPort: 2181
-        env:
-        - name: ZOOKEEPER_CLIENT_PORT
-          value: "2181"
+        - name: zookeeper
+          image: confluentinc/cp-zookeeper:7.5.0
+          ports:
+            - containerPort: 2181
+          env:
+            - name: ZOOKEEPER_CLIENT_PORT
+              value: "2181"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
 ---
 apiVersion: v1
 kind: Service
@@ -29,4 +36,4 @@ spec:
   selector:
     app: zookeeper
   ports:
-  - port: 2181
+    - port: 2181

@@ -4,3 +4,5 @@ metadata:
   name: gokart-config
 data:
   KAFKA_BROKERS: kafka:9092
+  KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+  KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092

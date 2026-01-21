@@ -13,21 +13,28 @@ spec:
         app: kafka
     spec:
       containers:
-      - name: kafka
-        image: confluentinc/cp-kafka:7.5.0
-        ports:
-        - containerPort: 9092
-        env:
-        - name: KAFKA_BROKER_ID
-          value: "1"
-        - name: KAFKA_ZOOKEEPER_CONNECT
-          value: zookeeper:2181
-        - name: KAFKA_LISTENERS
-          value: PLAINTEXT://0.0.0.0:9092
-        - name: KAFKA_ADVERTISED_LISTENERS
-          value: PLAINTEXT://kafka:9092
-        - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
-          value: "1"
+        - name: kafka
+          image: bitnami/kafka:3.6.1
+          ports:
+            - containerPort: 9092
+          env:
+            - name: KAFKA_CFG_ZOOKEEPER_CONNECT
+              value: zookeeper:2181
+            - name: KAFKA_CFG_LISTENERS
+              value: PLAINTEXT://:9092
+            - name: KAFKA_CFG_ADVERTISED_LISTENERS
+              value: PLAINTEXT://kafka:9092
+            - name: KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE
+              value: "true"
+            - name: ALLOW_PLAINTEXT_LISTENER
+              value: "yes"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
 ---
 apiVersion: v1
 kind: Service
@@ -37,4 +44,4 @@ spec:
   selector:
     app: kafka
   ports:
-  - port: 9092
+    - port: 9092
